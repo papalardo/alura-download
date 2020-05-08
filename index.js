@@ -1,6 +1,7 @@
 const Puppeteer = require('puppeteer');
 const cliProgress = require('cli-progress');
 const _colors = require("cli-color");
+const fs = require('fs-extra')
 
 const { chunkPromise, PromiseFlavor } = require('chunk-promise');
 
@@ -8,6 +9,7 @@ const { extractLessons, extractTasks, extractCourseTitle } = require('./alura-sc
 const { getPath } = require('./helpers')
 const { getPlaylist, downloadVideo, compileVideos } = require('./hls-download')
 const { doLogin } = require('./auth')
+const { tmpPath } = require('./config')
 
 const courseUrl = process.argv.slice(2)[0]
 
@@ -27,13 +29,18 @@ const getM3u8Url = async ({ page, taskLink }) => {
     return jsonContent[0].link
 }
 
+const deleteTmpDir = () => fs.rmdirSync(tmpPath, { recursive: true })
+
 const downloadVideos = async (playlist, pathToSave) => {
+
+    deleteTmpDir()
+
     const downloads = playlist.map((link, index) => {
-        return () => downloadVideo(link, `./tmp-hls/file-${index}.ts`)
+        return () => downloadVideo(link, `./${tmpPath}/file-${index}.ts`)
     })
 
     const progressBar = new cliProgress.SingleBar({
-        format: 'Downloading video parts |' + _colors.cyan('{bar}') + '| {percentage}% || {value}/{total} Chunks',
+        format: 'Downloading video fragments |' + _colors.cyan('{bar}') + '| {percentage}% || {value}/{total} fragments',
         barCompleteChar: '\u2588',
         barIncompleteChar: '\u2591',
         hideCursor: true,
@@ -59,9 +66,7 @@ const downloadVideos = async (playlist, pathToSave) => {
         }
     })
 
-    console.log(
-        _colors.cyan('\nVídeo baixado')
-    )
+    console.log(_colors.cyan('\n-> Video downloaded'))
 
     progressBar.stop()
 
@@ -69,6 +74,8 @@ const downloadVideos = async (playlist, pathToSave) => {
         files: response.map(file => file.value),
         output: `${pathToSave}.mp4`
     })
+
+    deleteTmpDir()
 
     _colors.cyan('Vídeo processado!')
 }

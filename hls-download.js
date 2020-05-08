@@ -41,7 +41,7 @@ const compileVideos = async ({ files = [], output = ''}) => {
     let inputNamesFormatted = 'concat:' + files.join('|')
 
     const progressBar = new cliProgress.SingleBar({
-        format: 'Processando vídeo |' + _colors.green('{bar}') + '| {percentage}%',
+        format: 'Processing video fragments |' + _colors.green('{bar}') + '| {percentage}%',
         barCompleteChar: '\u2588',
         barIncompleteChar: '\u2591',
         hideCursor: true,
@@ -53,13 +53,11 @@ const compileVideos = async ({ files = [], output = ''}) => {
             progressBar.start(100, 0)
         })
         .on('progress', function(progress) {
-            progressBar.update(progress.percent)
+            progressBar.update(Math.ceil(progress.percent))
         })
         .on('end', function() {
-            console.log(
-                _colors.green('\Processing vídeo')
-            )
             progressBar.stop()
+            console.log(_colors.green('\n-> Video processed and saved'))
             resolve()
         })
         .input(inputNamesFormatted)
