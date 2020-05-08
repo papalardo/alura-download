@@ -1,11 +1,11 @@
 Requirements:
 > [ffmpeg](http://www.ffmpeg.org/)
-On MACOS With Brew
 ```bash
+# MacOS with Brew
 $ brew install ffmpeg
 ```
 
-Dependences:
+Install dependences:
 ```bash
 $ yarn install
 ```

@@ -5,16 +5,14 @@ const _colors = require("cli-color");
 const { chunkPromise, PromiseFlavor } = require('chunk-promise');
 
 const { extractLessons, extractTasks, extractCourseTitle } = require('./alura-scrapper')
-const { getPath, concurrent } = require('./helpers')
+const { getPath } = require('./helpers')
 const { getPlaylist, downloadVideo, compileVideos } = require('./hls-download')
 const { doLogin } = require('./auth')
 
+const courseUrl = process.argv.slice(2)[0]
 
-
-const taskUrl = process.argv.slice(2)[0]
-
-if(! taskUrl) {
-    console.warn('URL não especificada');
+if(! courseUrl) {
+    console.warn('URL do curso não enviada');
     return;
 }
 
@@ -35,7 +33,7 @@ const downloadVideos = async (playlist, pathToSave) => {
     })
 
     const progressBar = new cliProgress.SingleBar({
-        format: 'Downloading parts video |' + _colors.cyan('{bar}') + '| {percentage}% || {value}/{total} Chunks',
+        format: 'Downloading video parts |' + _colors.cyan('{bar}') + '| {percentage}% || {value}/{total} Chunks',
         barCompleteChar: '\u2588',
         barIncompleteChar: '\u2591',
         hideCursor: true,
@@ -62,7 +60,7 @@ const downloadVideos = async (playlist, pathToSave) => {
     })
 
     console.log(
-        _colors.cyan('Vídeo baixado')
+        _colors.cyan('\nVídeo baixado')
     )
 
     progressBar.stop()
@@ -89,7 +87,7 @@ const downloadVideos = async (playlist, pathToSave) => {
 
         const page = await browser.newPage();
 
-        await page.goto(taskUrl);
+        await page.goto(courseUrl);
 
         const courseTitle = await extractCourseTitle({ page })
 

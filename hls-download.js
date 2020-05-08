@@ -54,9 +54,11 @@ const compileVideos = async ({ files = [], output = ''}) => {
         })
         .on('progress', function(progress) {
             progressBar.update(progress.percent)
-            // console.info(`Processing ${progress.percent} % done`);
         })
         .on('end', function() {
+            console.log(
+                _colors.green('\Processing vídeo')
+            )
             progressBar.stop()
             resolve()
         })

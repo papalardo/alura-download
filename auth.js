@@ -19,6 +19,7 @@ const doLogin = async ({ browser }) => {
         await page.close()
     } catch (err) {
         console.log('[LOGIN PROCESSS] - Failed')
+        console.log(err)
     }
 }
 
