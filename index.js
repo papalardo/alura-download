@@ -2,6 +2,7 @@ const Puppeteer = require('puppeteer');
 const cliProgress = require('cli-progress');
 const _colors = require("cli-color");
 const fs = require('fs-extra')
+const Path = require('path')
 
 const { chunkPromise, PromiseFlavor } = require('chunk-promise');
 
@@ -31,6 +32,7 @@ const getM3u8Url = async ({ page, taskLink }) => {
 }
 
 const deleteTmpDir = () => fs.rmdirSync(tmpPath, { recursive: true })
+
 
 const downloadVideos = async ({ playlist, directory, fileName }) => {
 
@@ -82,6 +84,64 @@ const createBrowser = async () => {
     });
 }
 
+const handleTask = async ({ task, indexTask , page, tasks, courseTitle, indexLesson, lesson }) => {
+    console.log(
+        `\n[TASK ${indexTask + 1}/${tasks.length}] - Working ${_colors.yellow(task.title)}`
+    )
+
+    const taskName = `Atividade ${indexTask + 1} - ${task.title}`;
+    
+    const pathArr = ['downloads', courseTitle, `Aula ${indexLesson + 1} - ${lesson.title}`, taskName]
+    
+    if (fs.existsSync(Path.join(...pathArr))) {
+        console.log(
+            `\n[TASK ${indexTask + 1}/${tasks.length}] - Skipping..`
+        )
+        return;
+    }
+
+    const directoryToSave = getPath(pathArr)
+
+    await Promise.all([
+        page.goto(task.link),
+        page.waitForNavigation({ waitUntil: 'networkidle0' }),
+    ])
+
+    await pageDownload({ 
+        page,
+        directory: directoryToSave,
+        fileName: taskName
+    })
+
+    try {
+        // Click when have the button.
+        // Prevent break inside this block
+        await page.$eval('button.transcription-toggle', button => button.click())
+    } catch {}
+
+    await page.screenshot({ path: `${directoryToSave}/${taskName}.png`, fullPage: true });
+
+    switch(task.type) {
+        case 'video':
+            console.log(
+                `\n[TASK] [${_colors.yellow(task.title)}] ${_colors.blue('Video found')}`
+            )
+            const playlist = await getPlaylist(
+                await getM3u8Url({ page, taskLink: task.link })
+            )
+            await downloadVideos({ 
+                playlist, 
+                directory: directoryToSave,
+                fileName: taskName
+            })
+            break;
+    }
+
+    console.log(
+        `\n[TASK] - ${_colors.yellow(task.title)} ${_colors.green('[OK]')}`
+    )
+}
+
 (async () => {
     try {
         const browser = await createBrowser()
@@ -109,58 +169,15 @@ const createBrowser = async () => {
             const tasks = await extractTasks({ page })
 
             console.log(
-                `\n[LESSON] - Working ${_colors.yellow(lesson.title)}`,
+                `\n[LESSON ${indexLesson + 1}/${lessons.length}] - Working ${_colors.yellow(lesson.title)}`,
                 '\n',
                 `\n[TASKS] - Found ${tasks.length} tasks`,
             )
+            
             for(const [indexTask, task] of tasks.entries()) {
-                console.log(
-                    `\n[TASK] - Working ${_colors.yellow(task.title)}`
-                )
-
-                const taskName = `Atividade ${indexTask + 1} - ${task.title}`;
-
-                const directoryToSave = getPath(['downloads', courseTitle, `Aula ${indexLesson + 1} - ${lesson.title}`, taskName])
-
-                await Promise.all([
-                    page.goto(task.link),
-                    page.waitForNavigation({ waitUntil: 'networkidle0' }),
-                ])
-
-                await pageDownload({ 
-                    page,
-                    directory: directoryToSave,
-                    fileName: taskName
-                })
-
-                try {
-                    // Click when have the button.
-                    // Prevent break inside this block
-                    await page.$eval('button.transcription-toggle', button => button.click())
-                } catch {}
-
-                await page.screenshot({ path: `${directoryToSave}/${taskName}.png`, fullPage: true });
-
-                switch(task.type) {
-                    case 'video':
-                        console.log(
-                            `\n[TASK] [${_colors.yellow(task.title)}] ${_colors.blue('Video found')}`
-                        )
-                        const playlist = await getPlaylist(
-                            await getM3u8Url({ page, taskLink: task.link })
-                        )
-                        await downloadVideos({ 
-                            playlist, 
-                            directory: directoryToSave,
-                            fileName: taskName
-                        })
-                        break;
-                }
-
-                console.log(
-                    `\n[TASK] - ${_colors.yellow(task.title)} ${_colors.green('[OK]')}`
-                )
+                await handleTask({ indexTask, task, page, tasks, courseTitle, indexLesson, lesson })
             }
+            
             console.log(
                 `\n[LESSON] - ${_colors.yellow(lesson.title)} ${_colors.green('[OK]')}`
             )
