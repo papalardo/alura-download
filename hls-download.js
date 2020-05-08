@@ -57,7 +57,7 @@ const compileVideos = async ({ files = [], output = ''}) => {
         })
         .on('end', function() {
             progressBar.stop()
-            console.log(_colors.green('\n-> Video processed and saved'))
+            console.log(_colors.green('-> Video processed and saved\n'))
             resolve()
         })
         .input(inputNamesFormatted)

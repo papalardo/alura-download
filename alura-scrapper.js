@@ -2,7 +2,11 @@ const { baseUrl } = require('./config')
 
 const extractCourseTitle = async ({ page }) => {
     return await page.evaluate(() => {
-        return document.querySelector('h1.course-header-banner-title strong').innerText
+        const titleElement = document.querySelector('h1.course-header-banner-title strong')
+        if(! titleElement) {
+            return null
+        }
+        return titleElement.innerText
     })
 }
 
