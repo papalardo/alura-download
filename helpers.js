@@ -5,10 +5,9 @@ const getPath = (paths = []) => {
     if(! Array.isArray(paths)) {
         paths = [paths]
     }
-    const pathFile = path.join(...paths)
-    const dir = path.dirname(pathFile)
+    const dir = path.join(...paths)
     fs.ensureDirSync(dir) 
-    return path.join(__dirname, pathFile)
+    return path.join(__dirname, dir)
 }
 
 module.exports = {

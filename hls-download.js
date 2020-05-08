@@ -19,8 +19,7 @@ const getPlaylist = async (m3u8Url) => {
     return playlist.map(file => file.uri)
 }
 
-const downloadVideo = async (url, fileName) => {  
-    const pathFile = getPath(fileName)
+const downloadVideo = async (url, pathFile) => {  
     const writer = fs.createWriteStream(pathFile)
   
     const response = await axios({
@@ -39,6 +38,8 @@ const downloadVideo = async (url, fileName) => {
 
 const compileVideos = async ({ files = [], output = ''}) => {
     let inputNamesFormatted = 'concat:' + files.join('|')
+
+    console.log('\n')
 
     const progressBar = new cliProgress.SingleBar({
         format: 'Processing video fragments |' + _colors.green('{bar}') + '| {percentage}%',

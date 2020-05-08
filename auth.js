@@ -1,6 +1,7 @@
 require('dotenv').config()
 
 const { baseUrl } = require('./config')
+const _colors = require("cli-color");
 
 const doLogin = async ({ browser }) => {
     try {
@@ -22,11 +23,15 @@ const doLogin = async ({ browser }) => {
             throw new Error("Usuário ou senha inválida")
         }
         
-        console.log('[LOGIN PROCESSS] - Authenticated')
+        console.log(
+            `[LOGIN PROCESSS] - ${_colors.green('Authenticated')}`
+        )
 
         await page.close()
     } catch (err) {
-        console.log('[LOGIN PROCESSS] - Failed, stopping process.')
+        console.log(
+            `[LOGIN PROCESSS] - ${_colors.red('Failed, exiting..')}`
+        )
         await browser.close();
     }
 }

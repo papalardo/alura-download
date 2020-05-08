@@ -4,12 +4,13 @@
     "chunk-promise": "^1.2.0",
     "cli-color": "^2.0.0",
     "cli-progress": "^3.8.2",
+    "debug": "^4.1.1",
     "dotenv": "^8.2.0",
     "fluent-ffmpeg": "^2.1.2",
     "fs-extra": "^9.0.0",
     "js-file-download": "^0.4.12",
     "parse-m3u8": "^1.0.1",
     "path": "^0.12.7",
-    "puppeteer": "^3.0.4"
+    "puppeteer": "^3.0.4"  
   }
 }
