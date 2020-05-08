@@ -1,0 +1,26 @@
+{
+  "dependencies": {
+    "axios": "^0.19.2",
+    "cheerio": "^1.0.0-rc.3",
+    "chunk-promise": "^1.2.0",
+    "cli-color": "^2.0.0",
+    "cli-progress": "^3.8.2",
+    "concatenate-files": "^0.1.1",
+    "cross-blob": "^1.2.2",
+    "dotenv": "^8.2.0",
+    "ffmpeg-concat": "^1.1.0",
+    "fluent-ffmpeg": "^2.1.2",
+    "fs": "^0.0.1-security",
+    "fs-extra": "^9.0.0",
+    "hlsdownloader": "^2.2.3",
+    "http": "^0.0.1-security",
+    "js-file-download": "^0.4.12",
+    "m3u8_to_mpegts": "^1.0.1",
+    "mpegts_to_mp4": "^1.0.1",
+    "node-hls-downloader": "^1.2.0",
+    "parse-m3u8": "^1.0.1",
+    "path": "^0.12.7",
+    "puppeteer": "^3.0.4",
+    "stream": "^0.0.2"
+  }
+}
