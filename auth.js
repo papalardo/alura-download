@@ -10,18 +10,18 @@ const doLogin = async ({ browser }) => {
         const page = await browser.newPage();
         await page.goto(`${baseUrl}/loginForm`);
 
-        await page.type('#login-email', process.env.USERNAME);
-        await page.type('#password', process.env.PASSWORD);
+        await page.type('#login-email', process.env.USUARIO);
+        await page.type('#password', process.env.SENHA);
 
         await Promise.all([
             page.$eval('form.signin-form', form => form.submit()),
             page.waitForNavigation({ waitUntil: 'networkidle0' }),
         ])
 
-        const error = await page.evaluate(() => document.querySelector('.alert-message').innerText);
-        if(error == "Usuário ou senha inválida") {
-            throw new Error("Usuário ou senha inválida")
-        }
+        const error = await page.evaluate(() => {
+            let alertMessage = document.querySelector('.alert-message')
+            return alertMessage ? alertMessage.innerText : null
+        });
         
         console.log(
             `[LOGIN PROCESSS] - ${_colors.green('Authenticated')}`
