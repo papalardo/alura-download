@@ -33,6 +33,10 @@ const getM3u8Url = async ({ page, taskLink }) => {
 
 const deleteTmpDir = () => fs.rmdirSync(tmpPath, { recursive: true })
 
+const handleMSNameFolder = (string) => { 
+   const regex = /[<>:"\/\\|?*\x00-\x1F]|^(?:aux|con|clock\$|nul|prn|com[1-9]|lpt[1-9])$/i;
+   return string.replace( new RegExp(regex,"gm"),"")
+}
 
 const downloadVideos = async ({ playlist, directory, fileName }) => {
 
@@ -89,9 +93,9 @@ const handleTask = async ({ task, indexTask , page, tasks, courseTitle, indexLes
         `\n[TASK ${indexTask + 1}/${tasks.length}] - Working ${_colors.yellow(task.title)}`
     )
 
-    const taskName = `Atividade ${indexTask + 1} - ${task.title}`;
+    const taskName = handleMSNameFolder(`Atividade ${indexTask + 1} - ${task.title}`);
     
-    const pathArr = ['downloads', courseTitle, `Aula ${indexLesson + 1} - ${lesson.title}`, taskName]
+    const pathArr = ['downloads', courseTitle, `Aula ${indexLesson + 1} - ${lesson.title}`, taskName].map(str => handleMSNameFolder(str))
     
     if (fs.existsSync(Path.join(...pathArr))) {
         console.log(
